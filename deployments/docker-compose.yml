@@ -1,0 +1,61 @@
+version: "3.8"
+services:
+
+  apiserver:
+    image: golang-boilerplate-apiserver:latest
+    build:
+      context: ./
+      dockerfile: build/apiserver/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - ./configs/apiserver/apiserver.env
+    ports:
+      - "8080:8080"
+
+  worker:
+    image: golang-boilerplate-worker:latest
+    build:
+      context: ./
+      dockerfile: build/worker/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - ./configs/worker/worker.env
+
+  postgres:
+    image: postgres:13
+    env_file:
+      - ./configs/postgres/postgres.env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data/pgdata
+
+  rabbitmq:
+    image: rabbitmq:3.9
+    env_file:
+      - ./configs/rabbitmq/rabbitmq.env
+    healthcheck:    
+      test: ["CMD", "rabbitmqctl", "status"]    
+      interval: 10s    
+      timeout: 5s    
+      retries: 10
+    ports:
+      - "127.0.0.1:5672:5672"
+
+volumes:
+  db-data: null

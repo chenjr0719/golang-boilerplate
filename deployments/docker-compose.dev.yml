@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+
+  apiserver:
+    profiles:
+      - dev-apps
+
+  worker:
+    profiles:
+      - dev-apps
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    env_file:
+      - ./configs/pgadmin/pgadmin.env
+    environment:
+      - PGADMIN_LISTEN_PORT=5050
+    ports:
+      - "127.0.0.1:5050:5050"
+    volumes:
+      - ./configs/pgadmin/servers.json:/pgadmin4/servers.json
+
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    ports:
+      - "127.0.0.1:15672:15672"
