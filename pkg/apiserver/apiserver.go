@@ -7,47 +7,59 @@ import (
 	v1 "github.com/chenjr0719/golang-boilerplate/pkg/apiserver/v1"
 	"github.com/chenjr0719/golang-boilerplate/pkg/config"
 	"github.com/chenjr0719/golang-boilerplate/pkg/db"
+	"github.com/chenjr0719/golang-boilerplate/pkg/log"
 	"github.com/fvbock/endless"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type APIServer struct {
-	Router *gin.Engine
+	config *config.Config
+	router *gin.Engine
+	db     *gorm.DB
 }
 
-func NewAPIServer() APIServer {
-	if config.Config.Mode == "release" {
+func NewAPIServer(conf *config.Config) (*APIServer, error) {
+	if conf.Mode == "release" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	server := APIServer{
-		Router: gin.Default(),
+	dbConnection, err := db.ConnectDatabase(conf)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Create API Server failed")
+		return nil, err
+	}
+
+	server := &APIServer{
+		config: conf,
+		router: gin.Default(),
+		db:     dbConnection,
 	}
 
 	// Default group
-	apiGroup := server.Router.Group("/")
-	apiGroup.GET("/healthz", liveness)
-	apiGroup.GET("/healthz/readiness", readiness)
+	apiGroup := server.router.Group("/")
+	apiGroup.GET("/healthz", server.liveness)
+	apiGroup.GET("/healthz/readiness", server.readiness)
 
 	// Add v1 APIs
-	v1.NewV1Group(apiGroup)
+	v1.NewV1Group(apiGroup, dbConnection)
 
 	// Swagger
 	docs.SwaggerInfo.BasePath = "/"
-	server.Router.GET("/docs/*any", redirectDocs, ginSwagger.WrapHandler(swaggerfiles.Handler))
+	server.router.GET("/docs/*any", server.redirectDocs, ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	return server
+	return server, nil
 }
 
-func liveness(ctx *gin.Context) {
+func (api *APIServer) liveness(ctx *gin.Context) {
 	ctx.String(200, "")
 }
 
-func readiness(ctx *gin.Context) {
-	sqlDB, err := db.DB.DB()
+func (api *APIServer) readiness(ctx *gin.Context) {
+	sqlDB, err := api.db.DB()
 	if err != nil {
 		ctx.String(500, "")
 		return
@@ -60,7 +72,7 @@ func readiness(ctx *gin.Context) {
 	ctx.String(200, "")
 }
 
-func redirectDocs(ctx *gin.Context) {
+func (api *APIServer) redirectDocs(ctx *gin.Context) {
 	if ctx.Request.RequestURI == "/docs/" {
 		ctx.Redirect(301, "/docs/index.html")
 		return
@@ -69,6 +81,6 @@ func redirectDocs(ctx *gin.Context) {
 
 func (server APIServer) Run(host string, port int) error {
 	address := host + ":" + strconv.Itoa(port)
-	err := endless.ListenAndServe(address, server.Router)
+	err := endless.ListenAndServe(address, server.router)
 	return err
 }

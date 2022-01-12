@@ -5,6 +5,7 @@ import (
 	"github.com/chenjr0719/golang-boilerplate/pkg/models"
 	"github.com/chenjr0719/golang-boilerplate/pkg/services"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type V1UserAPI struct {
@@ -16,11 +17,9 @@ type UserInput struct {
 	Email string `json:"email"  binding:"required"`
 } //@name UserInput
 
-var v1UserAPI *V1UserAPI
-
-func NewV1UserGroup(apiGroup *gin.RouterGroup) *gin.RouterGroup {
-	v1UserAPI = &V1UserAPI{
-		UserService: *services.NewUserService(),
+func NewV1UserGroup(apiGroup *gin.RouterGroup, db *gorm.DB) *gin.RouterGroup {
+	v1UserAPI := &V1UserAPI{
+		UserService: *services.NewUserService(db),
 	}
 
 	v1UserGroup := apiGroup.Group("/users")

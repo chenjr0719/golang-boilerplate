@@ -9,26 +9,16 @@ import (
 	"github.com/rs/zerolog"
 )
 
-var (
-	Logger = NewLogger()
-	Panic  = Logger.Panic
-	Fatal  = Logger.Fatal
-	Error  = Logger.Error
-	Warn   = Logger.Warn
-	Info   = Logger.Info
-	Debug  = Logger.Debug
-	Trace  = Logger.Trace
-)
-
-func NewLogger() zerolog.Logger {
+func NewLogger(conf config.Config) zerolog.Logger {
 	var output io.Writer
-	if config.Config.Mode == "release" {
+
+	if conf.Mode == "release" {
 		output = os.Stdout
 	} else {
 		output = zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
 	}
 
-	logLevel, err := zerolog.ParseLevel(config.Config.LogLevel)
+	logLevel, err := zerolog.ParseLevel(conf.LogLevel)
 	if err != nil {
 		logLevel = zerolog.InfoLevel
 	}

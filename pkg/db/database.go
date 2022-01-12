@@ -9,24 +9,24 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB = ConnectDatabase()
-
-func ConnectDatabase() *gorm.DB {
+func ConnectDatabase(conf *config.Config) (*gorm.DB, error) {
 	var dbConnection *gorm.DB
 	var err error
 
+	databaseURI := conf.DatabaseURI
 	switch {
-	case strings.HasPrefix(config.Config.DatabaseURI, "sqlite://"):
-		dbConnection, err = ConnectSqlite(config.Config.DatabaseURI)
-	case strings.HasPrefix(config.Config.DatabaseURI, "postgresql://"):
-		dbConnection, err = ConnectPostgres(config.Config.DatabaseURI)
+	case strings.HasPrefix(databaseURI, "sqlite://"):
+		dbConnection, err = ConnectSqlite(databaseURI)
+	case strings.HasPrefix(databaseURI, "postgresql://"):
+		dbConnection, err = ConnectPostgres(databaseURI)
 	default:
 		err = errors.New("unsupported db")
 	}
 	if err != nil {
-		log.Fatal().Msg("Failed to connect database")
+		log.Fatal().Err(err).Msg("Failed to connect database")
+		return nil, err
 	}
 
-	return dbConnection
+	return dbConnection, nil
 
 }

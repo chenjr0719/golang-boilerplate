@@ -9,7 +9,7 @@ import (
 )
 
 type WorkerClient struct {
-	Server *machinery.Server
+	server *machinery.Server
 }
 
 func NewWorkerClient() *WorkerClient {
@@ -19,7 +19,7 @@ func NewWorkerClient() *WorkerClient {
 		panic(err)
 	}
 	workerClient := &WorkerClient{
-		Server: server,
+		server: server,
 	}
 
 	return workerClient
@@ -51,7 +51,7 @@ func (wc *WorkerClient) SendTask(job models.Job) error {
 		return fmt.Errorf("send task failed, cannot parse task args: %s", err.Error())
 	}
 
-	_, err = wc.Server.SendTask(&task)
+	_, err = wc.server.SendTask(&task)
 	if err != nil {
 		return fmt.Errorf("send task failed, cannot send task to worker: %s", err.Error())
 	}

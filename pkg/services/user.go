@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/chenjr0719/golang-boilerplate/pkg/db"
 	"github.com/chenjr0719/golang-boilerplate/pkg/log"
 	"github.com/chenjr0719/golang-boilerplate/pkg/models"
 	"gorm.io/gorm"
@@ -14,12 +13,12 @@ type UserService struct {
 	db *gorm.DB
 }
 
-func NewUserService() *UserService {
+func NewUserService(db *gorm.DB) *UserService {
 	log.Info().Msg("Initialize UserService")
 
-	userService := &UserService{db: db.DB}
-	db.DB.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.User{})
 
+	userService := &UserService{db: db}
 	return userService
 }
 

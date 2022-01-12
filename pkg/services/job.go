@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/chenjr0719/golang-boilerplate/pkg/db"
 	"github.com/chenjr0719/golang-boilerplate/pkg/log"
 	"github.com/chenjr0719/golang-boilerplate/pkg/models"
 	"gorm.io/gorm"
@@ -14,13 +13,13 @@ type JobService struct {
 	db *gorm.DB
 }
 
-func NewJobService() *JobService {
+func NewJobService(db *gorm.DB) *JobService {
 	log.Info().Msg("Initialize JobService")
 
-	jobService := &JobService{db: db.DB.Preload("User")}
-	db.DB.Exec(models.CREATE_ENUM)
-	db.DB.AutoMigrate(&models.Job{})
+	db.Exec(models.CREATE_ENUM)
+	db.AutoMigrate(&models.Job{})
 
+	jobService := &JobService{db: db.Preload("User")}
 	return jobService
 }
 

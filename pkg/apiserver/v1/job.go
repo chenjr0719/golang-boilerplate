@@ -6,6 +6,7 @@ import (
 	"github.com/chenjr0719/golang-boilerplate/pkg/services"
 	"github.com/chenjr0719/golang-boilerplate/pkg/worker"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type V1JobAPI struct {
@@ -19,11 +20,9 @@ type JobInput struct {
 	UserID uint     `json:"userID" binding:"required"`
 } //@name JobInput
 
-var v1JobAPI *V1JobAPI
-
-func NewV1JobGroup(apiGroup *gin.RouterGroup) *gin.RouterGroup {
-	v1JobAPI = &V1JobAPI{
-		JobService:   *services.NewJobService(),
+func NewV1JobGroup(apiGroup *gin.RouterGroup, db *gorm.DB) *gin.RouterGroup {
+	v1JobAPI := &V1JobAPI{
+		JobService:   *services.NewJobService(db),
 		WorkerClient: *worker.NewWorkerClient(),
 	}
 

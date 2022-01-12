@@ -10,6 +10,7 @@ import (
 	machineryconfig "github.com/RichardKnop/machinery/v1/config"
 	"github.com/RichardKnop/machinery/v1/log"
 	"github.com/RichardKnop/machinery/v1/tasks"
+	"github.com/chenjr0719/golang-boilerplate/pkg/db"
 	"github.com/chenjr0719/golang-boilerplate/pkg/models"
 	"github.com/chenjr0719/golang-boilerplate/pkg/services"
 	workertasks "github.com/chenjr0719/golang-boilerplate/pkg/worker/tasks"
@@ -68,8 +69,13 @@ func PreTaskHandler(signature *tasks.Signature) {
 	log.INFO.Println("UUID:", signature.UUID)
 	log.INFO.Println("Args:", signature.Args)
 
+	dbConnection, err := db.ConnectDatabase()
+	if err != nil {
+		log.FATAL.Println(err)
+	}
+
+	jobService := services.NewJobService(dbConnection)
 	jobID := fmt.Sprintf("%s", signature.Args[0].Value)
-	jobService := services.NewJobService()
 	job, err := jobService.Get(jobID)
 	if err != nil {
 		log.FATAL.Println(err)
@@ -85,8 +91,13 @@ func PostTaskHandler(signature *tasks.Signature) {
 	log.INFO.Println("Finished:", signature.Name)
 	log.INFO.Println("UUID:", signature.UUID)
 
+	dbConnection, err := db.ConnectDatabase()
+	if err != nil {
+		log.FATAL.Println(err)
+	}
+
+	jobService := services.NewJobService(dbConnection)
 	jobID := fmt.Sprintf("%s", signature.Args[0].Value)
-	jobService := services.NewJobService()
 	job, err := jobService.Get(jobID)
 	if err != nil {
 		log.FATAL.Println(err)

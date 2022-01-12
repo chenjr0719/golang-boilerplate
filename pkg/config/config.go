@@ -4,13 +4,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-type config struct {
+type Config struct {
 	DatabaseURI string `mapstructure:"DATABASE_URI"`
 	Mode        string `mapstructure:"MODE"`
 	LogLevel    string `mapstructure:"LOG_lEVEL"`
 }
-
-var Config config = LoadConfig()
 
 func newViper() *viper.Viper {
 	v := viper.New()
@@ -30,17 +28,17 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("LOG_lEVEL", "info")
 }
 
-func LoadConfig() config {
+func LoadConfig() *Config {
 	v := newViper()
 
-	config := config{}
+	config := &Config{}
 	// Read from env first
 	err := v.Unmarshal(&config)
 	if err != nil {
 		panic(err)
 	}
 	// Overwrite config by .env file
-	v.ReadInConfig()
+	// v.ReadInConfig()
 
 	return config
 }
