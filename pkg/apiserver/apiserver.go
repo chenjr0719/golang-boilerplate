@@ -61,7 +61,7 @@ func readiness(ctx *gin.Context) {
 }
 
 func redirectDocs(ctx *gin.Context) {
-	if ctx.Request.RequestURI == "/docs/" {
+	if ctx.Request.URL.Path == "/docs/" {
 		ctx.Redirect(301, "/docs/index.html")
 		return
 	}

@@ -13,6 +13,10 @@ type V1JobAPI struct {
 	WorkerClient worker.WorkerClient
 }
 
+type JobList struct {
+	Items []models.Job `json:"items"`
+}
+
 type JobInput struct {
 	Name   string   `json:"name" binding:"required"`
 	Args   struct{} `json:"args"  binding:"required"`
@@ -44,7 +48,7 @@ func NewV1JobGroup(apiGroup *gin.RouterGroup) *gin.RouterGroup {
 // @Tags Jobs
 // @Accept json
 // @Produce json
-// @Success 200 {array} models.Job
+// @Success 200 {object} JobList
 // @Failure 500 {object} error.HTTPError
 // @Router /v1/jobs [get]
 func (api *V1JobAPI) ListJobs(ctx *gin.Context) {
@@ -85,7 +89,6 @@ func (api *V1JobAPI) CreateJob(ctx *gin.Context) {
 	}
 
 	err = api.WorkerClient.SendTask(job)
-	// err = api.WorkerClient.SendTask(ctx.Request.Context(), job)
 	if err != nil {
 		error.NewError(ctx, 500, err)
 	}
@@ -136,6 +139,7 @@ func (api *V1JobAPI) UpdateJob(ctx *gin.Context) {
 		return
 	}
 
+	job.Status = models.Pending
 	job, err := api.JobService.Update(id, job)
 	if err != nil {
 		error.NewError(ctx, 500, err)
@@ -196,7 +200,6 @@ func (api *V1JobAPI) RunJob(ctx *gin.Context) {
 	}
 
 	err = api.WorkerClient.SendTask(job)
-	// err = api.WorkerClient.SendTask(ctx.Request.Context(), job)
 	if err != nil {
 		error.NewError(ctx, 500, err)
 	}

@@ -11,6 +11,10 @@ type V1UserAPI struct {
 	UserService services.UserService
 }
 
+type UserList struct {
+	Items []models.User `json:"items"`
+}
+
 type UserInput struct {
 	Name  string `json:"name"  binding:"required"`
 	Email string `json:"email"  binding:"required"`
@@ -39,7 +43,7 @@ func NewV1UserGroup(apiGroup *gin.RouterGroup) *gin.RouterGroup {
 // @Tags Users
 // @Accept json
 // @Produce json
-// @Success 200 {array} models.User
+// @Success 200 {object} UserList
 // @Failure 500 {object} error.HTTPError
 // @Router /v1/users [get]
 func (api *V1UserAPI) ListUsers(ctx *gin.Context) {
