@@ -73,6 +73,20 @@ definitions:
     - email
     - name
     type: object
+  v1.JobList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/Job'
+        type: array
+    type: object
+  v1.UserList:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/User'
+        type: array
+    type: object
 info:
   contact: {}
 paths:
@@ -86,9 +100,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/Job'
-            type: array
+            $ref: '#/definitions/v1.JobList'
         "500":
           description: Internal Server Error
           schema:
@@ -252,9 +264,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/User'
-            type: array
+            $ref: '#/definitions/v1.UserList'
         "500":
           description: Internal Server Error
           schema:

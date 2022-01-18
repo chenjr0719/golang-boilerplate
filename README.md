@@ -1,16 +1,19 @@
 # golang-boilerplate
 
+[![go-test](https://github.com/chenjr0719/golang-boilerplate/actions/workflows/go-test.yaml/badge.svg)](https://github.com/chenjr0719/golang-boilerplate/actions/workflows/go-test.yaml)
+[![codecov](https://codecov.io/gh/chenjr0719/golang-boilerplate/branch/main/graph/badge.svg?token=20TFQNC0SP)](https://codecov.io/gh/chenjr0719/golang-boilerplate)
+[![Go Report Card](https://goreportcard.com/badge/github.com/chenjr0719/golang-boilerplate)](https://goreportcard.com/report/github.com/chenjr0719/golang-boilerplate)
+
 Golang Boilerplate Template for RESTful API and Worker
 
-- [golang-boilerplate](#golang-boilerplate)
-  - [Usage](#usage)
-  - [Configuration](#configuration)
-    - [Global configs](#global-configs)
-    - [Worker configs](#worker-configs)
-  - [Worker Tasks](#worker-tasks)
-  - [Project Layout](#project-layout)
-  - [Dependencies](#dependencies)
-  - [TODO](#todo)
+- [Usage](#usage)
+- [Configuration](#configuration)
+  - [Global configs](#global-configs)
+  - [Worker configs](#worker-configs)
+- [Worker Tasks](#worker-tasks)
+- [Project Layout](#project-layout)
+- [Dependencies](#dependencies)
+- [TODO](#todo)
 
 ## Usage
 
