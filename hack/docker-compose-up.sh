@@ -16,8 +16,8 @@ while [[ $# -gt 0 ]]; do
         DEV=TRUE
         shift # past argument
         ;;
-    --dev-apps)
-        DEV_APPS=TRUE
+    --debug)
+        DEBUG=TRUE
         shift # past argument
         ;;
     *)                     # unknown option
@@ -31,15 +31,15 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 if [[ ! -z "$DEV" ]] && [[ "$DEV" == "TRUE" ]]; then
     COMPOSE_ARGS="-f $DEPLOYMENT_DIR/docker-compose.dev.yml"
+    if [[ ! -z "$DEBUG" ]] && [[ "$DEBUG" == "TRUE" ]]; then
+        COMPOSE_PROFILE="--profile dev-apps"
+    else
+        COMPOSE_PROFILE=""
+    fi
 else
     COMPOSE_ARGS=""
 fi
 
-if [[ ! -z "$DEV_APPS" ]] && [[ "$DEV_APPS" == "TRUE" ]]; then
-    COMPOSE_PROFILE="--profile dev-apps"
-else
-    COMPOSE_PROFILE=""
-fi
 
 docker-compose \
     --project-directory $ROOT_DIR \

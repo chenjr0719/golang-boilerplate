@@ -3,11 +3,11 @@ services:
 
   apiserver:
     profiles:
-      - dev-apps
+      - debug
 
   worker:
     profiles:
-      - dev-apps
+      - debug
 
   pgadmin:
     image: dpage/pgadmin4
